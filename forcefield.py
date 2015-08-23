@@ -4,6 +4,7 @@ from helpers import *
 from org.bukkit.util import Vector
 from math import sin
 
+ff_help    = "utils.forcefeild.help"
 ff_perm    = "utils.forcefield"
 pass_perm  = "utils.forcefield.ignore"
 ff_prefix  = "&8[&bFF&8] "
@@ -42,7 +43,7 @@ def on_forcefield_command(sender, command, label, args):
         else:
             forcefield_header(sender, "&cInvalid syntax. Use &e/ff ? &cfor info.")
 
-    elif args[0] in ["HELP", "?"]: # /forcefield help
+    elif args[0] in ["HELP", "?"] and sender.hasPermission(ff_help): # /forcefield help
         forcefield_help(sender)
     else:
         forcefield_header(sender, "&cInvalid syntax. Use &e/ff ? &cfor info.")
