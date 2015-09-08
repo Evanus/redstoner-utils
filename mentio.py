@@ -8,6 +8,7 @@ max_amount = 3
 arrow      = colorify(u"&r&7\u2192&r")
 colors_reg = reg_compile(u"\u00A7[\\da-fk-or]") # finds color codes
 
+mentio_toggle = []
 
 def saveMentions():
     save_json_file("mentio", mentions)
@@ -19,6 +20,8 @@ def onChat(event):
         sender     = event.getPlayer()
         words      = event.getMessage().split(" ")
         recipients = event.getRecipients() # set of <Player>, may be a lazy or unmodifiable collection
+        n = sender.getName() 
+
 
         for recipient in list(recipients):
             recuid = uid(recipient)
@@ -46,7 +49,7 @@ def onChat(event):
                     break
 
             # player was mentioned
-            if rec_words != words:
+            if rec_words != words and n in mentio_toggle:
                 try:
                     recipients.remove(recipient) # don't send original message
                 except:
@@ -116,6 +119,7 @@ def show_help(player):
     msg(player, "&a/mentio add <word>")
     msg(player, "&a/mentio del <word>")
     msg(player, "&a/mentio list")
+    msg(player, "&a/mentio toggle")
 
 
 @hook.command("mentio")
@@ -142,6 +146,14 @@ def onListenCommand(sender, command, label, args):
                 msg(sender, "&c- &3%s" % word)
             if not keywords:
                 msg(sender, "&cYou are currently listening for no words! Try &6/mentio add <word>")
+        elif argnum == 1 and cmd == "toggle":
+            n = sender.getName()
+            if n in mentio_toggle:
+                msg(sender,"&aNo longer listening.")
+                mentio_toggle.remove(n)
+            else:
+                msg(sender,"&aNow listening.")
+                mentio_toggle.append(n)
         else:
             show_help(sender)
     else:
