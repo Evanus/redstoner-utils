@@ -6,89 +6,85 @@ import org.bukkit.Material as Material
 remake of dicodes blockplacemods
 """
 
-slab_toggle_list = []
-cauldron_toggle_list = []
-inventory_toggle_list = []
-
-sides = {
-    BlockSide.DOWN  : 0,
-    BlockSide.UP    : 1,
-    BlockSide.NORTH : 2,
-    BlockSide.SOUTH : 3,
-    BlockSide.WEST  : 4,
-    BlockSide.EAST  : 5
-}
+slabToggle      = []
+cauldronToggle  = []
+inventoryToggle = []
 
 blocks = {Material.DROPPER, Material.HOPPER, Material.FURNACE, Material.DISPENSER}
+info   = "please use: &9Slab&3, &9Inventory&3, &9Cauldron &3or &9Help&3."
 
-tog_perm = "utils.toggle"
+togPerm = "utils.toggle"
 
 @hook.event("block.BlockPlaceEvent", "monitor")
-def on_block_place(event):
+def blockPlace(event):
+    block    = event.getBlockPlaced()
     material = block.getType()
-    user = server.getPlayer().getName()
-    if (material in (Material.WOOD_STEP, Material.STEP)) and user in slab_toggle_list:
+    n        = event.getPlayer().getName()
+
+    if (material in (Material.WOOD_STEP, Material.STEP)) and n in slabToggle:
         block.setData(block.getData() + 8)
-    elif (material == Material.CAULDRON) and user in cauldron_toggle_list:
+
+    elif (material == Material.CAULDRON) and n in cauldronToggle:
         block.setData(block.getData() + 3)
-    elif (material in blocks) and user in inventory_toggle_list:
+
+    elif (material in blocks) and n in inventoryToggle:
         inv = user.getInventory().getItemInHand()
         state = block.getState()
-        block_inv = state.getInventory()
-        block_inv.setItem(int(slot), toStack(inv))
-
-"""
-Idk if this is needed, but meh. makes it look cleaner
-"""
-
-#	block handelling
-
-def slab():
-    user = server.getPlayer().getName()
-    if user in slab_toggle_list:
-        msg(sender, "&a Disabled automatically flipping slabs.")
-        slab_toggle_list.remove(name)
-    else:
-        msg(sender, "&a Enabled automatically flipping slabs.")
-        slab_toggle_list.remove(name)        
-
-def cauldron():
-    user = server.getPlayer().getName()
-    if user in cauldron_toggle_list:
-        msg(sender, "&a Disabled automatically filling cauldrons.")
-        cauldron_toggle_list.remove(name)
-    else:
-        msg(sender, "&a Enabled automatically filling cauldrons.")
-        cauldron_toggle_list.remove(name)
-
-def inventory():
-    user = server.getPlayer().getName()
-    if user in inventory_toggle_list:
-        msg(sender, "&a disabled automatically putting items in inventories.")
-        inventory_toggle_list.remove(name)
-    else:
-        msg(sender, "&a Enabled automatically putting items in inventories.")
-        inventory_toggle_list.remove(name)
-
-#	Command handelling
-
+        blockInv = state.getInventory()
+        blockInv.setItem(int(slot), toStack(inv))        
+def help():
+    msg(sender, "&a-=[&6BPM&a]=-")
+    msg(sender, "&6Aliases for /toggle: \n &e/set, /setting and /config\n")
+    msg(sender, "&6Available settings: \n &eSlab, Cauldron and Inventory\n")
+    msg(sender, "&6Slab: \n&eThe slab setting flips slabs to the top half \nof the block on placing them.\n")
+    msg(sender, "&6Cauldron: \n&eThe cauldron setting fills cauldrons on placing them.\n")
+    msg(sender, "&6Inventory: \n&eThe inventory setting puts a block in an item with an inventory.\n")
 @hook.command("toggle")
-def toggle_command(sender, args):
+def toggleCommand(sender, cmd, label, args):
     name = sender.getName()
-    if sender.hasPermission(togPerm) and sender.getWorld(Creative):
-        if args[0] == "slab":
-            slab()
-        elif args[0] == "cauldron":
-            cauldron()
-        elif args[0] == "inv" or "inventory":
-            inventory()
+    try:
+        if sender.hasPermission(togPerm) and sender.getWorld().getName() == "creative":
+            if len(args) > 0:              
+                if str(args[0]) == "slab":
+                    if name in slabToggle:
+                        msg(sender, "&a Disabled automatically flipping slabs.")
+                        slabToggle.remove(name)
+                    else:
+                        msg(sender, "&a Enabled automatically flipping slabs.")
+                        slabToggle.append(name)      
+
+                elif str(args[0]) == "cauldron":
+                    if name in cauldronToggle:
+                        msg(sender, "&a Disabled automatically filling cauldrons.")
+                        cauldronToggle.remove(name)
+                    else:
+                        msg(sender, "&a Enabled automatically filling cauldrons.")
+                        cauldronToggle.append(name)
+
+                elif str(args[0]) == "inv" or "inventory":
+                    if name in cauldronToggle:
+                        msg(sender, "&a Disabled automatically putting items in inventories.")
+                        cauldronToggle.remove(name)
+                    else:
+                        msg(sender, "&a Enabled automatically putting items in inventories.")
+                        cauldronToggle.append(name)
+
+                elif str(args[0]) == "help" or "?" or "wut":
+                    help()
+
+                elif len(args) > 1:
+                    msg(sender,"&aToo many arguments, \n&3&s") % info
+
+                else:
+                    msg(sender, "&9Unknown argument \n &3%s") % info
+            else:
+                help()  
+
+
+        elif sender.getWorld() != "creative":
+            msg(sender, "&aBPM doesn't work in this world.")
+            print sender.getWorld().getName() 
         else:
-            msg(sender, "&9Unknown argument \n &3please use: &9slab&3, &9inventory &3or &9cauldron&3.")
-
-@hook.command("set")
-def set_command(sender, args):
-    return toggle_command(sender, args)
-
-@hook.command("setting")
-def set_command(sender, args):
-    return toggle_command(sender, args)
+            msg(sender, "&aNo permission.")
+    except:
+        print trace()
