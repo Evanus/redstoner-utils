@@ -5,69 +5,50 @@ import org.bukkit.Material as Material
 remake of dicodes blockplacemods
 """
 
-blocks = {Material.DROPPER, Material.HOPPER, Material.FURNACE, Material.DISPENSER}
-info   = "please use: &9Slab&3, &9Inventory&3, &9Cauldron &3or &9Help&3."
-
 togPerm = "utils.toggle"
 
 @hook.event("block.BlockPlaceEvent", "low")
 def block_place(event):
-    try:
-        block     = event.getBlockPlaced()
-        material  = block.getType()
-        sender    = event.getPlayer()
-        py_player = get_py_player(sender)
-        if (material in (Material.WOOD_STEP, Material.STEP)) and py_player.slab_toggle and block.getData() < 8:
-            block.setData(block.getData() + 8)
-
-        elif (material == Material.CAULDRON) and py_player.cauldron_toggle:
-            block.setData(block.getData() + 3)
-    except:
-        print trace()
+    block     = event.getBlockPlaced()
+    material  = block.getType()
+    sender    = event.getPlayer()
+    py_player = get_py_player(sender)
+    if (material in (Material.WOOD_STEP, Material.STEP)) and py_player.slab_toggle and block.getData() < 8:
+        block.setData(block.getData() + 8)
+    elif (material == Material.CAULDRON) and py_player.cauldron_toggle:
+        block.setData(block.getData() + 3)
 
 def help(sender):
-    try:
-        msg(sender, "&a-=[&6BPM&a]=-")
-        msg(sender, "&6Aliases for /toggle: \n &e/set, /setting and /config\n")
-        msg(sender, "&6Available settings: \n &eSlab and Cauldron\n")
-        msg(sender, "&6Slab: \n&eThe slab setting flips slabs to the top half \nof the block on placing them.\n")
-        msg(sender, "&6Cauldron: \n&eThe cauldron setting fills cauldrons on placing them.\n")
-    except:
-        print trace()
+    msg(sender, "&a-=[&6BPM&a]=-")
+    msg(sender, "&6Aliases for /toggle: \n &e/set, /setting and /config\n")
+    msg(sender, "&6Available settings: \n &eSlab and Cauldron\n")
+    msg(sender, "&6Slab: \n&eThe slab setting flips slabs to the top half \nof the block on placing them.\n")
+    msg(sender, "&6Cauldron: \n&eThe cauldron setting fills cauldrons on placing them.\n")
 
 @hook.command("toggle")
 def toggle_command(sender, cmd, label, args):
     py_player = get_py_player(sender)
-    print py_player.player.getName() 
-    try:
-        if sender.hasPermission(togPerm) and sender.getWorld().getName() == "creative":
-            if len(args) > 0:              
-                if str(args[0]) == "slab":
-                    if py_player.slab_toggle == True:
-                        msg(sender, "&a Disabled automatically flipping slabs.")
-                        py_player.slab_toggle = False
-                    else:
-                        msg(sender, "&a Enabled automatically flipping slabs.")
-                        py_player.slab_toggle = True      
-
-                elif str(args[0]) == "cauldron":
-                    if py_player.cauldron_toggle == True:
-                        msg(sender, "&a Disabled automatically filling cauldrons.")
-                        py_player.cauldron_toggle = False 
-                    else:
-                        msg(sender, "&a Enabled automatically filling cauldrons.")
-                        py_player.cauldron_toggle = True
-
+    if sender.hasPermission(togPerm) and sender.getWorld().getName() == "creative":
+        if len(args) > 0:              
+            if str(args[0]) == "slab":
+                if py_player.slab_toggle == True:
+                    msg(sender, "&a Disabled automatically flipping slabs.")
+                    py_player.slab_toggle = False
                 else:
-                    help(sender)
+                    msg(sender, "&a Enabled automatically flipping slabs.")
+                    py_player.slab_toggle = True      
+            elif str(args[0]) == "cauldron":
+                if py_player.cauldron_toggle == True:
+                    msg(sender, "&a Disabled automatically filling cauldrons.")
+                    py_player.cauldron_toggle = False 
+                else:
+                    msg(sender, "&a Enabled automatically filling cauldrons.")
+                    py_player.cauldron_toggle = True
             else:
-                help(sender)  
-
-
-        elif sender.getWorld() != "creative":
-            msg(sender, "&aBPM doesn't work in this world.")
-            print sender.getWorld().getName() 
+                    help(sender)
         else:
-            msg(sender, "&aNo permission.")
-    except:
-        print trace()
+                help(sender)  
+    elif sender.getWorld() != "creative":
+        msg(sender, "&aBPM doesn't work in this world.")
+    else:
+        msg(sender, "&aNo permission.")
