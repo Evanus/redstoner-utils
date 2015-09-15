@@ -49,7 +49,7 @@ def onChat(event):
                     break
 
             # player was mentioned
-            if rec_words != words and n in mentio_toggle:
+            if rec_words != words and n not in mentio_toggle:
                 try:
                     recipients.remove(recipient) # don't send original message
                 except:
@@ -146,13 +146,15 @@ def onListenCommand(sender, command, label, args):
                 msg(sender, "&c- &3%s" % word)
             if not keywords:
                 msg(sender, "&cYou are currently listening for no words! Try &6/mentio add <word>")
+
+        # /mentio toggle
         elif argnum == 1 and cmd == "toggle":
             n = sender.getName()
             if n in mentio_toggle:
-                msg(sender,"&aNo longer listening.")
+                msg(sender,"&aNow listening.")
                 mentio_toggle.remove(n)
             else:
-                msg(sender,"&aNow listening.")
+                msg(sender,"&aNo longer listening.")
                 mentio_toggle.append(n)
         else:
             show_help(sender)
