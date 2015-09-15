@@ -18,6 +18,18 @@ def block_place(event):
     elif (material == Material.CAULDRON) and py_player.cauldron_toggle:
         block.setData(block.getData() + 3)
 
+@hook.event("player.PlayerInteractEvent", "high")
+def on_interact(event):
+    block  = event.getClickedBlock()
+    sender = event.getPlayer()
+    py_player = get_py_player(sender)
+    if str(event.getAction()) != "RIGHT_CLICK_BLOCK":
+        return
+    if block.getType() == Material.CAULDRON and py_player.cauldron_toggle:
+        block.setData(block.getData() - 1 if block.getData() > 0 else 3)
+    else:
+        return
+
 def help(sender):
     msg(sender, "&a-=[&6BPM&a]=-")
     msg(sender, "&6Aliases for /toggle: \n &e/set, /setting and /config\n")
@@ -52,3 +64,5 @@ def toggle_command(sender, cmd, label, args):
         msg(sender, "&aBPM doesn't work in this world.")
     else:
         msg(sender, "&aNo permission.")
+
+
