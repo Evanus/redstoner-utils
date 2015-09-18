@@ -1,11 +1,7 @@
 from helpers import *
 import org.bukkit.Material as Material
 
-"""
-remake of dicodes blockplacemods
-"""
-
-togPerm = "utils.toggle"
+tog_perm = "utils.toggle"
 
 @hook.event("block.BlockPlaceEvent", "low")
 def block_place(event):
@@ -40,7 +36,7 @@ def help(sender):
 @hook.command("toggle")
 def toggle_command(sender, cmd, label, args):
     py_player = get_py_player(sender)
-    if sender.hasPermission(togPerm) and sender.getWorld().getName() == "creative":
+    if sender.hasPermission(tog_perm) and sender.getWorld().getName() == "creative":
         if len(args) > 0:              
             if str(args[0]) == "slab":
                 if py_player.slab_toggle == True:
