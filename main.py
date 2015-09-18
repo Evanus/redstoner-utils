@@ -39,7 +39,7 @@ shared["load_modules"] = [
     # Adds /badge, allows to give players achievements
     "badges",
     # Adds a few block placement corrections/mods
-    "bpm",
+    "blockplacemods",
     # Adds /calc, toggles automatic solving of Math expressions in chat
     "calc",
     # Plugin to locate laggy chunks. /lc <n> lists chunks with more than n entities
